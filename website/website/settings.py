@@ -97,8 +97,12 @@ WSGI_APPLICATION = 'website.wsgi.application'
 
 DATABASES = {
      'default': {
-         'ENGINE': 'django.db.backends.sqlite3',
-         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+         'NAME': 'mydb',
+         'USER': 'myprojectuser',
+         'PASSWORD': 'password',
+         'HOST': 'localhost',
+         'PORT': '',
      }
 }
 
@@ -176,7 +180,7 @@ MEDIA_ROOT=os.path.join(BASE_DIR,'../website/media')
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 
-#PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
-#STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
+# PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
+# STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
 #MEDIA_URL='/media/'
 #MEDIA_ROOT=os.path.join(BASE_DIR,'members/media')
