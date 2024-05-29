@@ -68,22 +68,20 @@ class LoginWithGoogleView(APIView):
             TOKEN_INFO_URL = "https://www.googleapis.com/oauth2/v2/tokeninfo?access_token="+access_token
             headers = {
                 "Authorization": "Bearer {access_token}",
-               "Content-Type": "application/json"
+                "Content-Type": "application/json"
             }
             token_info = requests.get(TOKEN_INFO_URL ,data = {} ,headers = headers).json()
             if token_info['issued_to'] == GOOGLE_CLIENT_ID:
                 try:
                     USER_INFO_URL = "https://www.googleapis.com/oauth2/v1/userinfo?access_token="+access_token
-                    headers = {
-                        "Authorization": "Bearer {access_token}",
-                        "Content-Type": "application/json"
-                    }
                     user_info = requests.get(USER_INFO_URL ,data = {} ,headers = headers).json()
                     user, created = User.objects.get_or_create(
                         username = user_info['email'].split('@')[0],
-                        first_name = user_info['given_name'],
-                        last_name = user_info['family_name'],
-                        email = user_info['email']
+                        defaults = {
+                            'first_name': user_info.get('name', ''),
+                            'last_name': user_info.get('given_name', ''),
+                            'email': user_info['email']
+                        }
                     )
                     tokens = self.generate_token(user)
                     return Response(data={'access': tokens['access'],'refresh':tokens['refresh'], 'response':'valid'}, status=200)
@@ -95,6 +93,7 @@ class LoginWithGoogleView(APIView):
         except Exception as e:
             print(e)
             return Response(data={'response': 'Invalid token'}, status=400)
+
 
 
 # For Getting The Role of the User
