@@ -7,7 +7,10 @@ from .serilazers import MemberSerializer
 from .permissions import MembersListCreatePermission
 from .filters import MembersFilter
 
-
+from rest_framework import generics
+from team.models import Members
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from django_filters import rest_framework as filters
 # SCOPE FOR CACHING #
 
 class ListCreateMembersView(ListCreateAPIView):
@@ -21,3 +24,17 @@ class ListCreateMembersView(ListCreateAPIView):
 
     def get_queryset(self):
         return Members.objects.all()
+
+
+
+
+class AlumniYearWiseView(generics.ListAPIView):
+    serializer_class = MemberSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_class = MembersFilter
+
+    def get_queryset(self):
+        year = self.request.query_params.get('year', None)
+        if year:
+            return Members.objects.filter(batch_year=year).order_by('-batch_year', 'name')
+        return Members.objects.all().order_by('-batch_year', 'name')  # Default to all alumni if no year is specified
